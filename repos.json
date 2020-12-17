@@ -1,0 +1,12 @@
+[
+  {
+    "name": "serverless-release-dashboard",
+    "base": "main",
+    "head": "new"
+  },
+  {
+    "name": "pygithub-go-github-playground",
+    "base": "main",
+    "head": "develop"
+  }
+]
