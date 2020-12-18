@@ -26,6 +26,12 @@
 import Repos from "../repos.json";
 import RepoTable from "@/components/RepoTable.vue";
 
+var reposComputed = Repos.map(v => ({
+  ...v,
+  version: undefined,
+  releaseNotes: undefined
+}));
+
 export default {
   name: "app",
   components: {
@@ -33,7 +39,7 @@ export default {
   },
   data() {
     return {
-      repositories: Repos
+      repositories: reposComputed
     };
   },
   methods: {
