@@ -29,7 +29,10 @@ import RepoTable from "@/components/RepoTable.vue";
 var reposComputed = Repos.map(v => ({
   ...v,
   version: undefined,
-  releaseNotes: undefined
+  releaseNotes: undefined,
+  submitting: false,
+  error: false,
+  success: false
 }));
 
 export default {

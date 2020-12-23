@@ -18,18 +18,18 @@
             <b>{{ repo.name }}</b>
           </td>
           <td>{{ repo.base }}</td>
-          <td><b>«</b></td>
+          <td><b>««</b></td>
           <td>{{ repo.head }}</td>
           <td>
             <input
               v-model="repo.version"
-              :class="{ 'has-error': submitting && confirmTag }"
-              @focus="clearStatus"
-              @keypress="clearStatus"
+              :class="{ 'has-error': repo.submitting && confirmTag(index) }"
+              @focus="clearStatus(index)"
+              @keypress="clearStatus(index)"
               size="9"
               placeholder="e.g. v0.11.0"
             />
-            <p v-if="error && submitting" class="error-message">
+            <p v-if="repo.error && repo.submitting" class="error-message">
               Please insert version
             </p>
           </td>
@@ -52,9 +52,9 @@ export default {
   name: "repository-table",
   data() {
     return {
-      submitting: false,
-      error: false,
-      success: false,
+      submitting: "",
+      error: "",
+      success: "",
       github_repo: "",
       branch_base: "",
       branch_head: "",
@@ -68,6 +68,7 @@ export default {
 
   methods: {
     confirmTag(index) {
+      console.log(this.repositories[index].version)
       if (this.repositories[index].version == undefined) {
         return true;
       } else {
@@ -75,19 +76,19 @@ export default {
       }
     },
 
-    clearStatus() {
-      this.success = false;
-      this.error = false;
+    clearStatus(index) {
+      this.repositories[index].success = false;
+      this.repositories[index].error = false;
     },
 
     createRelease(index) {
       console.log("testing createRelease...");
-      this.submitting = true;
-      this.clearStatus();
+      this.repositories[index].submitting = true;
+      this.clearStatus(index);
 
-      this.error = this.confirmTag(index);
+      this.repositories[index].error = this.confirmTag(index);
 
-      if (this.error) {
+      if (this.repositories[index].error) {
         return;
       }
 
@@ -99,9 +100,9 @@ export default {
         release_notes: this.repositories[index].releaseNotes
       };
       this.$emit("create:release", releaseEvent);
-      this.error = false;
-      this.success = true;
-      this.submitting = false;
+      this.repositories[index].error = false;
+      this.repositories[index].success = true;
+      this.repositories[index].submitting = false;
     }
   }
 };
