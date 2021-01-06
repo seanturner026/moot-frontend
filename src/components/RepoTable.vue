@@ -69,7 +69,7 @@ export default {
 
   methods: {
     confirmTag(index) {
-      console.log(this.repositories[index].version)
+      console.log(this.repositories[index].version);
       if (this.repositories[index].version == undefined) {
         return true;
       } else {
@@ -109,9 +109,10 @@ export default {
   }
 };
 </script>
-<style scoped>
-form {
-  margin-bottom: 2rem;
+<style>
+button {
+  background: #009435;
+  border: 1px solid #009435;
 }
 
 [class*="-message"] {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app" class="small-container">
     <h1>Serverless Release Dashboard</h1>
     <div id="description" class="small-container">
       Clicking deploy will trigger the following actions:
