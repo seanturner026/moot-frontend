@@ -6,7 +6,7 @@
   },
   {
     "name": "pygithub-go-github-playground",
-    "base": "main",
-    "head": "develop"
+    "base": "develop",
+    "head": "new"
   }
 ]

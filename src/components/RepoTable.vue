@@ -55,6 +55,7 @@ export default {
       submitting: "",
       error: "",
       success: "",
+      github_owner: "",
       github_repo: "",
       branch_base: "",
       branch_head: "",
@@ -96,8 +97,9 @@ export default {
         github_repo: this.repositories[index].name,
         branch_base: this.repositories[index].base,
         branch_head: this.repositories[index].head,
-        version: this.repositories[index].version,
-        release_notes: this.repositories[index].releaseNotes
+        release_version: this.repositories[index].version,
+        release_body: this.repositories[index].releaseNotes,
+        github_owner: process.env.VUE_APP_GITHUB_OWNER
       };
       this.$emit("create:release", releaseEvent);
       this.repositories[index].error = false;
