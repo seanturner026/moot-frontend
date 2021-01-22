@@ -1,4 +1,4 @@
-# learn-vue
+# serverless-release-dashboard-frontend
 
 ## Project setup
 ```

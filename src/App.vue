@@ -1,12 +1,20 @@
 <template>
-  <div id="nav" class="small-container">
-    <router-link to="/">Home</router-link> |
+  <div id="nav" class="small-container" v-if="authenticated == true">
+    <router-link to="/repos">Repos</router-link> |
     <router-link to="/users">Users</router-link>
     <router-view></router-view>
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  data() {
+    return {
+      authenticated: true
+    };
+  }
+};
+</script>
 
 <style>
 .small-container {

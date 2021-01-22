@@ -1,17 +1,64 @@
 <template>
   <div id="repository-table">
-    <table>
-      <thead>
+    <table border="0">
+      <tr>
+        <th style="text-align:left">Provider</th>
+        <th style="text-align:left">Organization</th>
+        <th style="text-align:left">Repository</th>
+        <th style="text-align:left">Base Branch</th>
+        <th style="text-align:left">Head Branch</th>
+      </tr>
+      <tbody>
         <tr>
-          <th style="text-align:left">Repository</th>
-          <th style="text-align:left">Base</th>
-          <th style="text-align:left"></th>
-          <th style="text-align:left">Head</th>
-          <th style="text-align:left">Version</th>
-          <th style="text-align:left">Release Notes</th>
-          <th style="text-align:left">Deploy</th>
+          <td>
+            <input
+              v-model="createRepoProvider"
+              placeholder="github.com"
+              size="11"
+            />
+          </td>
+          <td>
+            <input
+              v-model="createRepoOrganization"
+              placeholder="seanturner026"
+              size="11"
+            />
+          </td>
+          <td>
+            <input
+              v-model="createRepoName"
+              placeholder="serverless-release-dashboard"
+              size="24"
+            />
+          </td>
+          <td>
+            <input
+              v-model="createRepoBranchBase"
+              placeholder="main"
+              size="11"
+            />
+          </td>
+          <td>
+            <input
+              v-model="createRepoBranchHead"
+              placeholder="develop"
+              size="11"
+            />
+          </td>
+          <td><button @click="createRepository()">Add Repo</button></td>
         </tr>
-      </thead>
+      </tbody>
+    </table>
+    <table border="0">
+      <tr>
+        <th style="text-align:left">Repository</th>
+        <th style="text-align:left">Base</th>
+        <th style="text-align:left"></th>
+        <th style="text-align:left">Head</th>
+        <th style="text-align:left">Version</th>
+        <th style="text-align:left">Release Notes</th>
+        <th style="text-align:left">Deploy</th>
+      </tr>
       <tbody>
         <tr v-for="(repo, index) in repositories" :key="repo.name">
           <td>
@@ -52,6 +99,11 @@ export default {
   name: "repository-table",
   data() {
     return {
+      createRepoProvider: "",
+      createRepoOrganization: "",
+      createRepoName: "",
+      createRepoBranchBase: "",
+      createRepoBranchHead: "",
       submitting: "",
       error: "",
       success: "",
@@ -68,6 +120,18 @@ export default {
   },
 
   methods: {
+    createRepository() {
+      console.log("testing createRepository");
+      const createRepositoryEvent = {
+        repo_provider: this.createRepoProvider,
+        repo_owner: this.createRepoOrganization,
+        repo_name: this.createRepoName,
+        branch_base: this.createRepoBranchBase,
+        branch_head: this.createRepoBranchHead
+      };
+      this.$emit("create:repository", createRepositoryEvent);
+    },
+
     confirmTag(index) {
       console.log(this.repositories[index].version);
       if (this.repositories[index].version == undefined) {

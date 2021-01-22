@@ -17,6 +17,7 @@
     </div>
     <repo-table
       :repositories="repositories"
+      @create:repository="createRepository($event)"
       @create:release="createRelease($event)"
     />
   </div>
@@ -46,6 +47,25 @@ export default {
     };
   },
   methods: {
+    async createRepository(createRepositoryEvent) {
+      try {
+        const response = await fetch(
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/create/repo",
+          {
+            method: "POST",
+            body: JSON.stringify(createRepositoryEvent),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: this.$cookies.get("Authorization")
+            }
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async createRelease(releaseEvent) {
       try {
         const response = await fetch(
@@ -54,7 +74,8 @@ export default {
             method: "POST",
             body: JSON.stringify(releaseEvent),
             headers: {
-              "Content-type": "application/json; charset=UTF-8"
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: this.$cookies.get("Authorization")
             }
           }
         );
