@@ -2,55 +2,6 @@
   <div id="repository-table">
     <table border="0">
       <tr>
-        <th style="text-align:left">Provider</th>
-        <th style="text-align:left">Organization</th>
-        <th style="text-align:left">Repository</th>
-        <th style="text-align:left">Base Branch</th>
-        <th style="text-align:left">Head Branch</th>
-      </tr>
-      <tbody>
-        <tr>
-          <td>
-            <input
-              v-model="createRepoProvider"
-              placeholder="github.com"
-              size="11"
-            />
-          </td>
-          <td>
-            <input
-              v-model="createRepoOrganization"
-              placeholder="seanturner026"
-              size="11"
-            />
-          </td>
-          <td>
-            <input
-              v-model="createRepoName"
-              placeholder="serverless-release-dashboard"
-              size="24"
-            />
-          </td>
-          <td>
-            <input
-              v-model="createRepoBranchBase"
-              placeholder="main"
-              size="11"
-            />
-          </td>
-          <td>
-            <input
-              v-model="createRepoBranchHead"
-              placeholder="develop"
-              size="11"
-            />
-          </td>
-          <td><button @click="createRepository()">Add Repo</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <table border="0">
-      <tr>
         <th style="text-align:left">Repository</th>
         <th style="text-align:left">Base</th>
         <th style="text-align:left"></th>
@@ -60,13 +11,13 @@
         <th style="text-align:left">Deploy</th>
       </tr>
       <tbody>
-        <tr v-for="(repo, index) in repositories" :key="repo.name">
+        <tr v-for="(repo, index) in repositories" :key="repo.repo_name">
           <td>
-            <b>{{ repo.name }}</b>
+            <b>{{ repo.repo_name }}</b>
           </td>
-          <td>{{ repo.base }}</td>
+          <td>{{ repo.branch_base }}</td>
           <td><b>««</b></td>
-          <td>{{ repo.head }}</td>
+          <td>{{ repo.branch_head }}</td>
           <td>
             <input
               v-model="repo.version"
@@ -82,7 +33,7 @@
           </td>
           <td>
             <textarea
-              v-model="repo.releaseNotes"
+              v-model="repo.release_notes"
               placeholder="Insert notes"
               rows="5"
             ></textarea>
@@ -99,6 +50,7 @@ export default {
   name: "repository-table",
   data() {
     return {
+      repositories: [],
       createRepoProvider: "",
       createRepoOrganization: "",
       createRepoName: "",
@@ -115,25 +67,37 @@ export default {
       release_body: ""
     };
   },
-  props: {
-    repositories: Array
+
+  created() {
+    this.listRepositories();
+  },
+
+  watch: {
+    $repositories: "listRepositories"
   },
 
   methods: {
-    createRepository() {
-      console.log("testing createRepository");
-      const createRepositoryEvent = {
-        repo_provider: this.createRepoProvider,
-        repo_owner: this.createRepoOrganization,
-        repo_name: this.createRepoName,
-        branch_base: this.createRepoBranchBase,
-        branch_head: this.createRepoBranchHead
-      };
-      this.$emit("create:repository", createRepositoryEvent);
+    async listRepositories() {
+      console.log("testing listRepositories...");
+      try {
+        const response = await fetch(
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/list/repos",
+          {
+            method: "POST",
+            body: '{"repo_owner": "seanturner026"}',
+            headers: {
+              Authorization: this.$cookies.get("Authorization")
+            }
+          }
+        );
+        const data = await response.json();
+        this.repositories = data;
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     confirmTag(index) {
-      console.log(this.repositories[index].version);
       if (this.repositories[index].version == undefined) {
         return true;
       } else {
@@ -158,12 +122,12 @@ export default {
       }
 
       const releaseEvent = {
-        github_repo: this.repositories[index].name,
-        branch_base: this.repositories[index].base,
-        branch_head: this.repositories[index].head,
-        release_version: this.repositories[index].version,
-        release_body: this.repositories[index].releaseNotes,
-        github_owner: process.env.VUE_APP_GITHUB_OWNER
+        github_owner: process.env.VUE_APP_GITHUB_OWNER,
+        github_repo: this.repositories[index].repo_name,
+        branch_base: this.repositories[index].branch_base,
+        branch_head: this.repositories[index].branch_head,
+        release_body: this.repositories[index].release_notes,
+        release_version: this.repositories[index].version
       };
       this.$emit("create:release", releaseEvent);
       this.repositories[index].error = false;

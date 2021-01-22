@@ -15,35 +15,27 @@
         Send a slack message containing the release notes.
       </li>
     </div>
+    <create-repo @create:repository="createRepository($event)" />
     <repo-table
       :repositories="repositories"
-      @create:repository="createRepository($event)"
       @create:release="createRelease($event)"
     />
   </div>
 </template>
 
 <script>
-import Repos from "../../repos.json";
+import CreateRepo from "@/components/CreateRepo.vue";
 import RepoTable from "@/components/RepoTable.vue";
-
-var reposComputed = Repos.map(v => ({
-  ...v,
-  version: undefined,
-  releaseNotes: undefined,
-  submitting: false,
-  error: false,
-  success: false
-}));
 
 export default {
   name: "Home",
   components: {
+    CreateRepo,
     RepoTable
   },
   data() {
     return {
-      repositories: reposComputed
+      repositories: []
     };
   },
   methods: {

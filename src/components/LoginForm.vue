@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  name: "LoginForm",
+  name: "login-form",
   props: {
     session_id: String,
     new_password_required: {
