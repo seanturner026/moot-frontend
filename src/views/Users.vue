@@ -1,11 +1,7 @@
 <template>
   <div class="users">
     <h1>Users</h1>
-    <users-table
-      :users="users"
-      @delete:user="deleteUser($event)"
-      @create:user="createUser($event)"
-    />
+    <users-table :users="users" @create:user="createUser($event)" />
   </div>
 </template>
 
@@ -18,9 +14,12 @@ export default {
     UsersTable
   },
   data() {
-    return {
-      users: []
-    };
+    return {};
+  },
+  props: {
+    users: {
+      type: Array
+    }
   },
   methods: {
     async createUser(createUserEvent) {
@@ -30,27 +29,6 @@ export default {
           {
             method: "POST",
             body: JSON.stringify(createUserEvent),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
-            }
-          }
-        );
-        const data = await response.json();
-        console.log(response);
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    async deleteUser(deleteUserEvent) {
-      try {
-        const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/user",
-          {
-            method: "POST",
-            body: JSON.stringify(deleteUserEvent),
             headers: {
               "Content-type": "application/json; charset=UTF-8",
               Authorization: this.$cookies.get("Authorization")

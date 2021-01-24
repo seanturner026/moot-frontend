@@ -1,17 +1,24 @@
 <template>
   <div id="repository-table">
+    <button @click="deleteRepos(indexes)" disabled>
+      delete selected
+    </button>
     <table border="0">
       <tr>
+        <th style="text-align:left"></th>
         <th style="text-align:left">Repository</th>
         <th style="text-align:left">Base</th>
         <th style="text-align:left"></th>
         <th style="text-align:left">Head</th>
         <th style="text-align:left">Version</th>
         <th style="text-align:left">Release Notes</th>
-        <th style="text-align:left">Deploy</th>
+        <th style="text-align:left"></th>
       </tr>
       <tbody>
         <tr v-for="(repo, index) in repositories" :key="repo.repo_name">
+          <td>
+            <input v-model="repo.selected" type="checkbox" id="selector" />
+          </td>
           <td>
             <b>{{ repo.repo_name }}</b>
           </td>
@@ -50,7 +57,6 @@ export default {
   name: "repository-table",
   data() {
     return {
-      repositories: [],
       createRepoProvider: "",
       createRepoOrganization: "",
       createRepoName: "",
@@ -59,6 +65,7 @@ export default {
       submitting: "",
       error: "",
       success: "",
+      selected: false,
       github_owner: "",
       github_repo: "",
       branch_base: "",
@@ -67,36 +74,13 @@ export default {
       release_body: ""
     };
   },
-
-  created() {
-    this.listRepositories();
-  },
-
-  watch: {
-    $repositories: "listRepositories"
+  props: {
+    repositories: {
+      type: Array
+    }
   },
 
   methods: {
-    async listRepositories() {
-      console.log("testing listRepositories...");
-      try {
-        const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/list/repos",
-          {
-            method: "POST",
-            body: '{"repo_owner": "seanturner026"}',
-            headers: {
-              Authorization: this.$cookies.get("Authorization")
-            }
-          }
-        );
-        const data = await response.json();
-        this.repositories = data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
     confirmTag(index) {
       if (this.repositories[index].version == undefined) {
         return true;

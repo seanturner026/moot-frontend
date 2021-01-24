@@ -18,6 +18,7 @@
     <create-repo @create:repository="createRepository($event)" />
     <repo-table
       :repositories="repositories"
+      :key="repoTableComponentKey"
       @create:release="createRelease($event)"
     />
   </div>
@@ -35,10 +36,19 @@ export default {
   },
   data() {
     return {
-      repositories: []
+      repoTableComponentKey: 0
     };
   },
+  props: {
+    repositories: {
+      type: Array
+    }
+  },
   methods: {
+    forceRerender() {
+      this.repoTableComponentKey += 1;
+    },
+
     async createRepository(createRepositoryEvent) {
       try {
         const response = await fetch(
@@ -54,10 +64,13 @@ export default {
         );
         const data = await response.json();
         console.log(data);
+        this.repositories.push(createRepositoryEvent);
+        this.forceRerender();
       } catch (error) {
         console.error(error);
       }
     },
+
     async createRelease(releaseEvent) {
       try {
         const response = await fetch(
@@ -72,7 +85,6 @@ export default {
           }
         );
         const data = await response.json();
-        console.log(response);
         console.log(data);
       } catch (error) {
         console.error(error);

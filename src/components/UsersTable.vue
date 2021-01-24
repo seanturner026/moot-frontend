@@ -4,14 +4,14 @@
       v-model="invitedUser"
       size="17"
       placeholder="e.g. email@example.com"
+      position="absolute"
+      right="0px"
     />
     <button @click="createUser(invitedUser)">Invite user</button>
     <table>
-      <thead>
-        <tr>
-          <th style="text-align:left">User Name</th>
-        </tr>
-      </thead>
+      <tr>
+        <th style="text-align:left">User Name</th>
+      </tr>
       <tbody>
         <tr v-for="(user, index) in users" :key="user.name">
           <td>{{ user.name }}</td>
@@ -29,16 +29,13 @@ export default {
   name: "users-table",
   data() {
     return {
-      users: [],
       invitedUser: ""
     };
   },
-  created() {
-    this.listUsers();
-  },
-
-  watch: {
-    $users: "listUsers"
+  props: {
+    users: {
+      type: Array
+    }
   },
 
   methods: {
@@ -50,32 +47,30 @@ export default {
       this.$emit("create:user", createUserEvent);
     },
 
-    deleteUser(index) {
+    async deleteUser(index) {
       console.log("testing deleteUser...");
       const deleteUserEvent = {
         email_address: this.users[index].name
       };
-      this.$emit("delete:user", deleteUserEvent);
-    },
-
-    async listUsers() {
-      console.log("testing listUser...");
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/list/users",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/user",
           {
-            method: "GET",
+            method: "POST",
+            body: JSON.stringify(deleteUserEvent),
             headers: {
+              "Content-type": "application/json; charset=UTF-8",
               Authorization: this.$cookies.get("Authorization")
             }
           }
         );
         const data = await response.json();
-        this.users = data;
-        console.log(this.users);
+        console.log(response);
+        console.log(data);
       } catch (error) {
         console.error(error);
       }
+      this.users.splice(index, 1);
     }
   }
 };
