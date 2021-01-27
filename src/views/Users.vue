@@ -1,7 +1,11 @@
 <template>
   <div class="users">
-    <h1>Users</h1>
-    <users-table :users="users" @create:user="createUser($event)" />
+    <users-table
+      :users="users"
+      :key="usersTableComponentKey"
+      @create:user="createUser($event)"
+      @delete:user="deleteUser($event)"
+    />
   </div>
 </template>
 
@@ -14,7 +18,9 @@ export default {
     UsersTable
   },
   data() {
-    return {};
+    return {
+      usersTableComponentKey: 0
+    };
   },
   props: {
     users: {
@@ -22,6 +28,10 @@ export default {
     }
   },
   methods: {
+    forceRerender() {
+      this.usersTableComponentKey += 1;
+    },
+
     async createUser(createUserEvent) {
       try {
         const response = await fetch(
@@ -38,6 +48,37 @@ export default {
         const data = await response.json();
         console.log(response);
         console.log(data);
+        this.users.push({ name: createUserEvent.email_address });
+        this.forceRerender();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async deleteUser(deleteuserEvent) {
+      try {
+        const response = await fetch(
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/user",
+          {
+            method: "POST",
+            body: JSON.stringify(deleteuserEvent),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: this.$cookies.get("Authorization")
+            }
+          }
+        );
+        const data = await response.json();
+        console.log(response);
+        console.log(data);
+        this.users.splice(
+          0,
+          this.users.length,
+          ...this.users.filter(
+            item => item.name != deleteuserEvent.email_address
+          )
+        );
+        this.forceRerender();
       } catch (error) {
         console.error(error);
       }

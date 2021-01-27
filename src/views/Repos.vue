@@ -1,20 +1,6 @@
 <template>
   <div id="app" class="small-container">
     <h1>Serverless Release Dashboard</h1>
-    <div id="description" class="small-container" style="text-align:left">
-      <b>Clicking deploy will trigger the following actions:</b>
-      <li style="text-align:left">
-        Create a pull request of the specified "head" branch into the "base"
-        branch, and merge the pull request
-      </li>
-      <li style="text-align:left">
-        Create a release using the specified version and release notes on
-        Github.com
-      </li>
-      <li style="text-align:left">
-        Send a slack message containing the release notes.
-      </li>
-    </div>
     <create-repo @create:repository="createRepository($event)" />
     <repo-table
       :repositories="repositories"
@@ -73,6 +59,7 @@ export default {
 
     async createRelease(releaseEvent) {
       try {
+        console.log(releaseEvent);
         const response = await fetch(
           process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/release",
           {
@@ -85,6 +72,7 @@ export default {
           }
         );
         const data = await response.json();
+        console.log(response);
         console.log(data);
       } catch (error) {
         console.error(error);

@@ -1,77 +1,126 @@
 <template>
   <div id="repository-table">
-    <button @click="deleteRepos(indexes)" disabled>
-      delete selected
-    </button>
-    <table border="0">
-      <tr>
-        <th style="text-align:left"></th>
-        <th style="text-align:left">Repository</th>
-        <th style="text-align:left">Base</th>
-        <th style="text-align:left"></th>
-        <th style="text-align:left">Head</th>
-        <th style="text-align:left">Version</th>
-        <th style="text-align:left">Release Notes</th>
-        <th style="text-align:left"></th>
-      </tr>
-      <tbody>
-        <tr v-for="(repo, index) in repositories" :key="repo.repo_name">
-          <td>
-            <input v-model="repo.selected" type="checkbox" id="selector" />
-          </td>
-          <td>
-            <b>{{ repo.repo_name }}</b>
-          </td>
-          <td>{{ repo.branch_base }}</td>
-          <td><b>««</b></td>
-          <td>{{ repo.branch_head }}</td>
-          <td>
-            <input
-              v-model="repo.version"
-              :class="{ 'has-error': repo.submitting && confirmTag(index) }"
-              @focus="clearStatus(index)"
-              @keypress="clearStatus(index)"
-              size="9"
-              placeholder="e.g. v0.11.0"
-            />
-            <p v-if="repo.error && repo.submitting" class="error-message">
-              Please insert version
-            </p>
-          </td>
-          <td>
-            <textarea
-              v-model="repo.release_notes"
-              placeholder="Insert notes"
-              rows="5"
-            ></textarea>
-          </td>
-          <td><button @click="createRelease(index)">deploy</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <div align="right">
+      <b-input-group class="mt-3">
+        <b-form-input
+          v-model="searchQuery"
+          class="form-control"
+          type="text"
+          placeholder="Search"
+        ></b-form-input>
+        <b-input-group-append>
+          <b-button
+            @click="deleteRepos(indexes)"
+            :disabled="disableButton"
+            variant="danger"
+            >Delete repo(s)</b-button
+          >
+        </b-input-group-append>
+      </b-input-group>
+    </div>
+    <div>
+      <b-card-group
+        deck
+        v-for="(repo, index) in resultQuery"
+        :key="repo.repo_name"
+      >
+        <b-card
+          align="left"
+          no-body
+          border-variant="secondary"
+          footer-border-variant="secondary"
+          class="overflow-hidden; mt-3"
+          style="max-width: 1080;"
+        >
+          <b-col no-gutters>
+            <b-form-checkbox
+              v-model="repo.selected"
+              value="selected"
+              unchecked-value="not_selected"
+              @change="enableDeleteButton($event)"
+            ></b-form-checkbox
+          ></b-col>
+          <b-row no-gutters>
+            <b-col md="5">
+              <b-card-body :title="repo.repo_name">
+                <b
+                  ><b-card-text>
+                    Branch Config: {{ repo.branch_base }} «
+                    {{ repo.branch_head }}
+                  </b-card-text></b
+                >
+                <b
+                  ><b-card-text>
+                    Previous Version: x
+                  </b-card-text></b
+                >
+              </b-card-body>
+            </b-col>
+            <b-col md="7">
+              <textarea
+                v-model="repo.release_notes"
+                placeholder="Insert notes"
+                rows="4"
+              ></textarea>
+            </b-col>
+          </b-row>
+          <b-row> </b-row>
+          <b-card-footer>
+            <b-input-group>
+              <b-form-input
+                v-model="repo.version"
+                placeholder="Version - e.g. v0.11.0"
+              ></b-form-input>
+              <b-input-group-append>
+                <b-button
+                  variant="info"
+                  @click="createRelease(index)"
+                  :disabled="false"
+                  >deploy</b-button
+                >
+              </b-input-group-append>
+            </b-input-group>
+          </b-card-footer>
+        </b-card>
+      </b-card-group>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  computed: {
+    resultQuery() {
+      if (this.searchQuery) {
+        return this.repositories.filter(item => {
+          return this.searchQuery
+            .toLowerCase()
+            .split(" ")
+            .every(v => item.repo_name.toLowerCase().includes(v));
+        });
+      } else {
+        return this.repositories;
+      }
+    }
+  },
+
   name: "repository-table",
   data() {
     return {
-      createRepoProvider: "",
-      createRepoOrganization: "",
-      createRepoName: "",
-      createRepoBranchBase: "",
-      createRepoBranchHead: "",
       submitting: "",
       error: "",
       success: "",
       selected: false,
+      selectedCount: 0,
+      disableButton: true,
+      disableDeployButton: true,
       github_owner: "",
       github_repo: "",
       branch_base: "",
       branch_head: "",
       release_version: "",
-      release_body: ""
+      release_body: "",
+      searchQuery: null
     };
   },
   props: {
@@ -81,6 +130,28 @@ export default {
   },
 
   methods: {
+    enableDeleteButton(selectedStatus) {
+      if (selectedStatus == "selected") {
+        this.selectedCount += 1;
+      } else if (selectedStatus == "not_selected") {
+        this.selectedCount -= 1;
+      }
+
+      if (this.selectedCount > 0) {
+        this.disableButton = false;
+      } else if (this.selectedCount == 0) {
+        this.disableButton = true;
+      }
+    },
+
+    // enableDeployButton(index) {
+    //   if (this.repositories[index].version == undefined) {
+    //     this.repositories[index].deployable = true;
+    //   } else {
+    //     this.repositories[index].deployable = false;
+    //   }
+    // },
+
     confirmTag(index) {
       if (this.repositories[index].version == undefined) {
         return true;
@@ -118,6 +189,8 @@ export default {
       this.repositories[index].success = true;
       this.repositories[index].submitting = false;
     }
+
+    // deleteRepo(index) {}
   }
 };
 </script>

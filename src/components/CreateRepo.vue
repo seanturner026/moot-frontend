@@ -1,5 +1,5 @@
 <template>
-  <div id="create-repository-table">
+  <div id="create-repository-table" class="mt-5">
     <table border="0">
       <tr>
         <th style="text-align:left">Provider</th>
@@ -45,7 +45,11 @@
               size="11"
             />
           </td>
-          <td><button @click="createRepository()">Add Repo</button></td>
+          <td>
+            <b-button @click="createRepository()" size="sm" variant="info"
+              >add repo</b-button
+            >
+          </td>
         </tr>
       </tbody>
     </table>

@@ -1,13 +1,17 @@
 <template>
   <div id="users-table">
-    <input
-      v-model="invitedUser"
-      size="17"
-      placeholder="e.g. email@example.com"
-      position="absolute"
-      right="0px"
-    />
-    <button @click="createUser(invitedUser)">Invite user</button>
+    <b-input-group class="mt-3">
+      <b-form-input
+        v-model="invitedUser"
+        size="17"
+        placeholder="e.g. email@example.com"
+      ></b-form-input>
+      <b-input-group-append>
+        <b-button variant="info" @click="createUser(invitedUser)"
+          >Invite user</b-button
+        >
+      </b-input-group-append>
+    </b-input-group>
     <table>
       <tr>
         <th style="text-align:left">User Name</th>
@@ -16,7 +20,12 @@
         <tr v-for="(user, index) in users" :key="user.name">
           <td>{{ user.name }}</td>
           <td>
-            <button @click="deleteUser(index)">Delete</button>
+            <b-button
+              size="md"
+              variant="outline-danger"
+              @click="deleteUser(index)"
+              >Delete</b-button
+            >
           </td>
         </tr>
       </tbody>
@@ -47,30 +56,12 @@ export default {
       this.$emit("create:user", createUserEvent);
     },
 
-    async deleteUser(index) {
+    deleteUser(index) {
       console.log("testing deleteUser...");
       const deleteUserEvent = {
         email_address: this.users[index].name
       };
-      try {
-        const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/user",
-          {
-            method: "POST",
-            body: JSON.stringify(deleteUserEvent),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
-            }
-          }
-        );
-        const data = await response.json();
-        console.log(response);
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-      this.users.splice(index, 1);
+      this.$emit("delete:user", deleteUserEvent);
     }
   }
 };

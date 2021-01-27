@@ -1,15 +1,30 @@
 <template>
   <div id="login-form">
     <h1>Serverless Release Dashboard</h1>
+    <div id="description" class="small-container" style="text-align:left">
+      <b>Clicking deploy will trigger the following actions:</b>
+      <li style="text-align:left">
+        Create a pull request of the specified "head" branch into the "base"
+        branch, and merge the pull request
+      </li>
+      <li style="text-align:left">
+        Create a release using the specified version and release notes on
+        Github.com
+      </li>
+      <li style="text-align:left">
+        Send a slack message containing the release notes.
+      </li>
+    </div>
     <form>
-      <label for="email_address">Email Address:</label><br />
+      <b><div align="left">Email Address:</div></b>
+      <br />
       <input
         v-model="login_details.email_address"
         type="text"
         id="email_address"
         name="email_address"
       /><br />
-      <label for="password">Password:</label><br />
+      <b><div align="left">Password:</div></b><br />
       <input
         v-model="login_details.password"
         type="password"
@@ -27,12 +42,22 @@
         name="new_password"
       />
     </form>
-    <button v-if="!new_password_required" @click="loginUser($event)">
-      Login
-    </button>
-    <button v-if="new_password_required" @click="resetPassword($event)">
+    <b-button
+      v-if="!new_password_required"
+      size="md"
+      variant="info"
+      @click="loginUser($event)"
+    >
+      Login</b-button
+    >
+    <b-button
+      v-if="new_password_required"
+      size="md"
+      variant="info"
+      @click="resetPassword($event)"
+    >
       Reset Password
-    </button>
+    </b-button>
   </div>
 </template>
 
