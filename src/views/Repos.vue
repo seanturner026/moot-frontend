@@ -5,6 +5,7 @@
     <repo-table
       :repositories="repositories"
       :key="repoTableComponentKey"
+      @delete:repository="deleteRepositories($event)"
       @create:release="createRelease($event)"
     />
   </div>
@@ -33,6 +34,37 @@ export default {
   methods: {
     forceRerender() {
       this.repoTableComponentKey += 1;
+    },
+
+    async deleteRepositories(deleteRepositoriesEvent) {
+      try {
+        const response = await fetch(
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/repo",
+          {
+            method: "POST",
+            body: JSON.stringify(deleteRepositoriesEvent),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: this.$cookies.get("Authorization")
+            }
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
+          console.log(i, deleteRepositoriesEvent.repositories[i]);
+          this.repositories.splice(
+            0,
+            this.repositories.length,
+            ...this.repositories.filter(
+              item => item.repo_name != deleteRepositoriesEvent.repositories[i]
+            )
+          );
+        }
+        this.forceRerender();
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     async createRepository(createRepositoryEvent) {

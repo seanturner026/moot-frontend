@@ -10,7 +10,7 @@
         ></b-form-input>
         <b-input-group-append>
           <b-button
-            @click="deleteRepos(indexes)"
+            @click="deleteRepos()"
             :disabled="disableButton"
             variant="danger"
             >Delete repo(s)</b-button
@@ -188,9 +188,27 @@ export default {
       this.repositories[index].error = false;
       this.repositories[index].success = true;
       this.repositories[index].submitting = false;
-    }
+    },
 
-    // deleteRepo(index) {}
+    deleteRepos() {
+      console.log("testing deleteRepo...");
+      var deleteRepositories = this.repositories.reduce(function(
+        filtered,
+        repo
+      ) {
+        if (repo.selected) {
+          var deleteRepo = repo.repo_name;
+          filtered.push(deleteRepo);
+        }
+        return filtered;
+      },
+      []);
+      const deleteRepositoriesEvent = {
+        repositories: deleteRepositories
+      };
+      console.log(deleteRepositoriesEvent);
+      this.$emit("delete:repository", deleteRepositoriesEvent);
+    }
   }
 };
 </script>
