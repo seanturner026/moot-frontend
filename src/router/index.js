@@ -11,9 +11,10 @@ async function listRepositories(to, from, next) {
   if (Vue.$cookies.get("Authorization")) {
     try {
       const response = await fetch(
-        process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/list/repos",
+        process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/list",
         {
           method: "POST",
+          // NOTE(SMT): Replace with value from cookie once login is reworked
           body: '{"repo_owner": "seanturner026"}',
           headers: {
             Authorization: Vue.$cookies.get("Authorization")
@@ -43,7 +44,7 @@ async function listUsers(to, from, next) {
   if (Vue.$cookies.get("Authorization")) {
     try {
       const response = await fetch(
-        process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/list/users",
+        process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/users/list",
         {
           method: "GET",
           headers: {

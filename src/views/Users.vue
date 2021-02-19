@@ -35,7 +35,7 @@ export default {
     async createUser(createUserEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/create/user",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/users/create",
           {
             method: "POST",
             body: JSON.stringify(createUserEvent),
@@ -58,7 +58,7 @@ export default {
     async deleteUser(deleteuserEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/user",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/users/delete",
           {
             method: "POST",
             body: JSON.stringify(deleteuserEvent),

@@ -27,7 +27,7 @@ export default {
     async loginUser(loginEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/login/user",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/auth/login",
           {
             method: "POST",
             body: JSON.stringify(loginEvent)
@@ -50,7 +50,7 @@ export default {
     async resetPassword(resetPasswordEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/reset/user/password",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/auth/reset/password",
           {
             method: "POST",
             body: JSON.stringify(resetPasswordEvent)
@@ -61,7 +61,7 @@ export default {
       } catch (error) {
         console.error(error);
       }
-      // this.$router.push("/repos");
+      this.$router.push("/repos");
     }
   }
 };

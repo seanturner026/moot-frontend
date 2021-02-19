@@ -29,42 +29,66 @@
           no-body
           border-variant="secondary"
           footer-border-variant="secondary"
-          class="overflow-hidden; mt-3"
+          class="overflow-hidden; mt-4"
           style="max-width: 1080;"
+          card-columns-gap:="1.25rem"
         >
-          <b-col no-gutters>
-            <b-form-checkbox
-              v-model="repo.selected"
-              value="selected"
-              unchecked-value="not_selected"
-              @change="enableDeleteButton($event)"
-            ></b-form-checkbox
-          ></b-col>
-          <b-row no-gutters>
-            <b-col md="5">
-              <b-card-body :title="repo.repo_name">
+          <b-card-body>
+            <b-row align-h="center">
+              <b-col md="1" align-self="center">
+                <b-img
+                  v-if="repo.repo_provider == 'github.com'"
+                  width="50"
+                  height="50"
+                  src="@/assets/images/github.png"
+                ></b-img>
+              </b-col>
+              <b-col md="10" align-self="center">
+                <h3>{{ repo.repo_name }}</h3>
+              </b-col>
+              <b-col md="1">
+                <b-form-checkbox
+                  align="right"
+                  v-model="repo.selected"
+                  value="selected"
+                  unchecked-value="not_selected"
+                  @change="enableDeleteButton($event)"
+                ></b-form-checkbox>
+              </b-col>
+            </b-row>
+          </b-card-body>
+          <b-row>
+            <b-col md="4">
+              <b-card-body>
                 <b
                   ><b-card-text>
-                    Branch Config: {{ repo.branch_base }} «
-                    {{ repo.branch_head }}
+                    Branch Config:
                   </b-card-text></b
                 >
+                <b-card-text
+                  >{{ repo.branch_base }} «
+                  {{ repo.branch_head }}
+                </b-card-text>
                 <b
-                  ><b-card-text>
-                    Previous Version: x
+                  ><b-card-text v-if="repo.current_version != ''">
+                    Previous Version:
                   </b-card-text></b
                 >
+                <b-card-text v-if="repo.current_version != ''">
+                  {{ repo.current_version }}
+                </b-card-text>
               </b-card-body>
             </b-col>
-            <b-col md="7">
-              <textarea
-                v-model="repo.release_notes"
-                placeholder="Insert notes"
-                rows="4"
-              ></textarea>
+            <b-col md="8">
+              <b-card-body>
+                <textarea
+                  v-model="repo.release_notes"
+                  placeholder="Insert notes"
+                  rows="5"
+                ></textarea>
+              </b-card-body>
             </b-col>
           </b-row>
-          <b-row> </b-row>
           <b-card-footer>
             <b-input-group>
               <b-form-input
@@ -197,7 +221,10 @@ export default {
         repo
       ) {
         if (repo.selected) {
-          var deleteRepo = repo.repo_name;
+          var deleteRepo = {
+            repo_name: repo.repo_name,
+            repo_owner: repo.repo_owner
+          };
           filtered.push(deleteRepo);
         }
         return filtered;
@@ -206,7 +233,6 @@ export default {
       const deleteRepositoriesEvent = {
         repositories: deleteRepositories
       };
-      console.log(deleteRepositoriesEvent);
       this.$emit("delete:repository", deleteRepositoriesEvent);
     }
   }

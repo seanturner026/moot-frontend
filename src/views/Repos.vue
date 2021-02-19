@@ -39,7 +39,7 @@ export default {
     async deleteRepositories(deleteRepositoriesEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/delete/repo",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/delete",
           {
             method: "POST",
             body: JSON.stringify(deleteRepositoriesEvent),
@@ -70,7 +70,7 @@ export default {
     async createRepository(createRepositoryEvent) {
       try {
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/create/repo",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/create",
           {
             method: "POST",
             body: JSON.stringify(createRepositoryEvent),
@@ -93,7 +93,7 @@ export default {
       try {
         console.log(releaseEvent);
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/release",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/releases/create",
           {
             method: "POST",
             body: JSON.stringify(releaseEvent),
