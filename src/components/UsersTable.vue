@@ -66,22 +66,3 @@ export default {
   }
 };
 </script>
-
-<style>
-button {
-  background: #009435;
-  border: 1px solid #009435;
-}
-
-[class*="-message"] {
-  font-weight: 500;
-}
-
-.error-message {
-  color: #d33c40;
-}
-
-.success-message {
-  color: #32a95d;
-}
-</style>

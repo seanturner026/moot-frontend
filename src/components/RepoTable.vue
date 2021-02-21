@@ -48,7 +48,7 @@
               </b-col>
               <b-col md="1">
                 <b-form-checkbox
-                  align="right"
+                  class="vertCenterContentContainer"
                   v-model="repo.selected"
                   value="selected"
                   unchecked-value="not_selected"
@@ -71,7 +71,7 @@
                 </b-card-text>
                 <b
                   ><b-card-text v-if="repo.current_version != ''">
-                    Previous Version:
+                    Current Version:
                   </b-card-text></b
                 >
                 <b-card-text v-if="repo.current_version != ''">
@@ -238,22 +238,3 @@ export default {
   }
 };
 </script>
-
-<style>
-button {
-  background: #009435;
-  border: 1px solid #009435;
-}
-
-[class*="-message"] {
-  font-weight: 500;
-}
-
-.error-message {
-  color: #d33c40;
-}
-
-.success-message {
-  color: #32a95d;
-}
-</style>

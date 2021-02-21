@@ -22,6 +22,7 @@ async function listRepositories(to, from, next) {
         }
       );
       const repositories = await response.json();
+      console.log(repositories);
       if (repositories.message != "Unauthorized") {
         isAuthenticated = true;
         to.params.repositories = repositories;

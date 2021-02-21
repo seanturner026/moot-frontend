@@ -1,7 +1,12 @@
 <template>
-  <div id="nav" class="small-container" v-if="authenticated == true">
-    <router-link to="/repos">Repos</router-link> |
-    <router-link to="/users">Users</router-link>
+  <div id="nav" class="small-container">
+    <router-link v-if="this.$router.currentRoute.path != '/'" to="/repos"
+      >Repos</router-link
+    >
+    <a v-if="this.$router.currentRoute.path != '/'"> | </a>
+    <router-link v-if="this.$router.currentRoute.path != '/'" to="/users"
+      >Users</router-link
+    >
     <router-view></router-view>
   </div>
 </template>
