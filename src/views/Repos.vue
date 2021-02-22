@@ -1,24 +1,23 @@
 <template>
   <div id="app" class="small-container">
     <h1>Serverless Release Dashboard</h1>
-    <create-repo @create:repository="createRepository($event)" />
     <repo-table
       :repositories="repositories"
       :key="repoTableComponentKey"
-      @delete:repository="deleteRepositories($event)"
       @create:release="createRelease($event)"
+      @create:repository="createRepository($event)"
+      @delete:repository="deleteRepositories($event)"
+      @trigger:forceRerender="forceRerender()"
     />
   </div>
 </template>
 
 <script>
-import CreateRepo from "@/components/CreateRepo.vue";
 import RepoTable from "@/components/RepoTable.vue";
 
 export default {
   name: "Home",
   components: {
-    CreateRepo,
     RepoTable
   },
   data() {
@@ -36,35 +35,16 @@ export default {
       this.repoTableComponentKey += 1;
     },
 
-    async deleteRepositories(deleteRepositoriesEvent) {
-      try {
-        const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/delete",
-          {
-            method: "POST",
-            body: JSON.stringify(deleteRepositoriesEvent),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
-            }
-          }
-        );
-        const data = await response.json();
-        console.log(data);
-        for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
-          console.log(i, deleteRepositoriesEvent.repositories[i]);
-          this.repositories.splice(
-            0,
-            this.repositories.length,
-            ...this.repositories.filter(
-              item => item.repo_name != deleteRepositoriesEvent.repositories[i]
-            )
-          );
+    createRepositoryNotification(createRepositoryEvent) {
+      console.log(createRepositoryEvent);
+      this.$bvToast.toast(
+        `Added repository ${createRepositoryEvent.repo_name}`,
+        {
+          title: "Success!",
+          variant: "info",
+          autoHideDelay: 3000
         }
-        this.forceRerender();
-      } catch (error) {
-        console.error(error);
-      }
+      );
     },
 
     async createRepository(createRepositoryEvent) {
@@ -83,7 +63,7 @@ export default {
         const data = await response.json();
         console.log(data);
         this.repositories.push(createRepositoryEvent);
-        this.forceRerender();
+        this.createRepositoryNotification(createRepositoryEvent);
       } catch (error) {
         console.error(error);
       }
@@ -106,6 +86,41 @@ export default {
         const data = await response.json();
         console.log(response);
         console.log(data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async deleteRepositories(deleteRepositoriesEvent) {
+      try {
+        const response = await fetch(
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/delete",
+          {
+            method: "POST",
+            body: JSON.stringify(deleteRepositoriesEvent),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: this.$cookies.get("Authorization")
+            }
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        console.log("before", this.repositories);
+        for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
+          console.log(i, deleteRepositoriesEvent.repositories[i]);
+          this.repositories.splice(
+            0,
+            this.repositories.length,
+            ...this.repositories.filter(
+              item =>
+                item.repo_name !=
+                deleteRepositoriesEvent.repositories[i].repo_name
+            )
+          );
+        }
+        this.forceRerender();
+        console.log("after", this.repositories);
       } catch (error) {
         console.error(error);
       }

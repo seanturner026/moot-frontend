@@ -1,8 +1,12 @@
 <template>
   <div id="repository-table">
-    <div align="right">
+    <b-container fluid="false">
       <b-input-group class="mt-3">
+        <b-button v-b-toggle.repo-add-sidebar md="1" variant="info"
+          >Add Repository</b-button
+        >
         <b-form-input
+          md="3"
           v-model="searchQuery"
           class="form-control"
           type="text"
@@ -10,14 +14,64 @@
         ></b-form-input>
         <b-input-group-append>
           <b-button
-            @click="deleteRepos()"
+            @click="deleteRepositories()"
             :disabled="disableButton"
             variant="danger"
-            >Delete repo(s)</b-button
+            >Delete Repository(ies)</b-button
           >
         </b-input-group-append>
       </b-input-group>
-    </div>
+    </b-container>
+    <b-sidebar
+      id="repo-add-sidebar"
+      title="Add Repository"
+      backdrop
+      shadow
+      v-on:hidden="triggerForceRerender"
+    >
+      <b-container fluid>
+        <h6 style="text-align:left">Provider:</h6>
+        <b-form-input
+          v-model="createRepoProvider"
+          placeholder="github.com"
+          size="11"
+          style="text-align:left"
+        />
+        <h6 style="text-align:left">Organization:</h6>
+        <b-form-input
+          v-model="createRepoOrganization"
+          placeholder="seanturner026"
+          size="11"
+          style="text-align:left"
+        />
+        <h6 style="text-align:left">Repository:</h6>
+        <b-form-input
+          v-model="createRepoName"
+          placeholder="serverless-release-dashboard"
+          size="24"
+          style="text-align:left"
+        />
+        <h6 style="text-align:left">Base Branch:</h6>
+        <b-form-input
+          v-model="createRepoBranchBase"
+          placeholder="main"
+          size="11"
+          style="text-align:left"
+        />
+        <h6 style="text-align:left">Head Branch:</h6>
+        <b-form-input
+          v-model="createRepoBranchHead"
+          placeholder="develop"
+          size="11"
+          style="text-align:left"
+        />
+        <div align="right">
+          <b-button @click="createRepository()" size="md" variant="info"
+            >add repo</b-button
+          >
+        </div>
+      </b-container>
+    </b-sidebar>
     <div>
       <b-card-group
         deck
@@ -48,7 +102,6 @@
               </b-col>
               <b-col md="1">
                 <b-form-checkbox
-                  class="vertCenterContentContainer"
                   v-model="repo.selected"
                   value="selected"
                   unchecked-value="not_selected"
@@ -58,7 +111,7 @@
             </b-row>
           </b-card-body>
           <b-row>
-            <b-col md="4">
+            <b-col md="3">
               <b-card-body>
                 <b
                   ><b-card-text>
@@ -79,12 +132,12 @@
                 </b-card-text>
               </b-card-body>
             </b-col>
-            <b-col md="8">
+            <b-col md="9">
               <b-card-body>
                 <textarea
                   v-model="repo.release_notes"
                   placeholder="Insert notes"
-                  rows="5"
+                  rows="4"
                 ></textarea>
               </b-card-body>
             </b-col>
@@ -144,7 +197,12 @@ export default {
       branch_head: "",
       release_version: "",
       release_body: "",
-      searchQuery: null
+      searchQuery: null,
+      createRepoProvider: "",
+      createRepoOrganization: "",
+      createRepoName: "",
+      createRepoBranchBase: "",
+      createRepoBranchHead: ""
     };
   },
   props: {
@@ -189,6 +247,10 @@ export default {
       this.repositories[index].error = false;
     },
 
+    triggerForceRerender() {
+      this.$emit("trigger:forceRerender");
+    },
+
     createRelease(index) {
       console.log("testing createRelease...");
       this.repositories[index].submitting = true;
@@ -214,7 +276,19 @@ export default {
       this.repositories[index].submitting = false;
     },
 
-    deleteRepos() {
+    createRepository() {
+      console.log("testing createRepository");
+      const createRepositoryEvent = {
+        repo_provider: this.createRepoProvider,
+        repo_owner: this.createRepoOrganization,
+        repo_name: this.createRepoName,
+        branch_base: this.createRepoBranchBase,
+        branch_head: this.createRepoBranchHead
+      };
+      this.$emit("create:repository", createRepositoryEvent);
+    },
+
+    deleteRepositories() {
       console.log("testing deleteRepo...");
       var deleteRepositories = this.repositories.reduce(function(
         filtered,

@@ -54,6 +54,7 @@ async function listUsers(to, from, next) {
         }
       );
       const users = await response.json();
+      console.log(users);
       if (users.message != "Unauthorized") {
         isAuthenticated = true;
         to.params.users = users;
