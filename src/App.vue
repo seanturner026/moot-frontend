@@ -1,12 +1,21 @@
 <template>
-  <div id="nav" class="small-container">
-    <router-link v-if="this.$router.currentRoute.path != '/'" to="/repos"
-      >Repos</router-link
-    >
-    <a v-if="this.$router.currentRoute.path != '/'"> | </a>
-    <router-link v-if="this.$router.currentRoute.path != '/'" to="/users"
-      >Users</router-link
-    >
+  <div>
+    <b-navbar type="dark" variant="dark" style="margin-bottom: 50px">
+      <b-navbar-nav>
+        <b-nav-item href="" v-if="this.$router.currentRoute.path != '/'">
+          <router-link
+            v-if="this.$router.currentRoute.path != '/'"
+            to="/repositories"
+            ><div class="text-no-link">Repositories</div></router-link
+          ></b-nav-item
+        >
+        <b-nav-item href="" v-if="this.$router.currentRoute.path != '/'">
+          <router-link v-if="this.$router.currentRoute.path != '/'" to="/users">
+            <div class="text-no-link">Users</div></router-link
+          ></b-nav-item
+        >
+      </b-navbar-nav>
+    </b-navbar>
     <router-view></router-view>
   </div>
 </template>
@@ -22,6 +31,10 @@ export default {
 </script>
 
 <style>
+.text-no-link {
+  color: white;
+}
+
 .small-container {
   max-width: 980px;
   margin-bottom: 20px;

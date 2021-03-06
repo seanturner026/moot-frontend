@@ -13,9 +13,7 @@ async function listRepositories(to, from, next) {
       const response = await fetch(
         process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/list",
         {
-          method: "POST",
-          // NOTE(SMT): Replace with value from cookie once login is reworked
-          body: '{"repo_owner": "seanturner026"}',
+          method: "GET",
           headers: {
             Authorization: Vue.$cookies.get("Authorization")
           }
@@ -25,7 +23,11 @@ async function listRepositories(to, from, next) {
       console.log(repositories);
       if (repositories.message != "Unauthorized") {
         isAuthenticated = true;
-        to.params.repositories = repositories;
+        const modifiedRespositories = repositories.map(v => ({
+          ...v,
+          hotfix: false
+        }));
+        to.params.repositories = modifiedRespositories;
         next();
       }
     } catch (error) {
@@ -57,7 +59,11 @@ async function listUsers(to, from, next) {
       console.log(users);
       if (users.message != "Unauthorized") {
         isAuthenticated = true;
-        to.params.users = users;
+        const modifiedUsers = users.map(v => ({
+          ...v,
+          delete: true
+        }));
+        to.params.users = modifiedUsers;
         next();
       }
     } catch (error) {
@@ -78,8 +84,8 @@ const routes = [
     component: () => import("../views/Login.vue")
   },
   {
-    path: "/repos",
-    name: "Repos",
+    path: "/repositories",
+    name: "Repositories",
     props: true,
     beforeEnter: listRepositories,
     component: () => import("../views/Repos.vue")

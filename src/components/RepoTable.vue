@@ -2,7 +2,11 @@
   <div id="repository-table">
     <b-container fluid="false">
       <b-input-group class="mt-3">
-        <b-button v-b-toggle.repo-add-sidebar md="1" variant="info"
+        <b-button
+          class="button-margin-right"
+          v-b-toggle.repo-add-sidebar
+          md="1"
+          variant="info"
           >Add Repository</b-button
         >
         <b-form-input
@@ -15,7 +19,7 @@
         <b-input-group-append>
           <b-button
             @click="deleteRepositories()"
-            :disabled="disableButton"
+            :disabled="disableDeleteRepositoriesButton"
             variant="danger"
             >Delete Repository(ies)</b-button
           >
@@ -31,9 +35,26 @@
     >
       <b-container fluid>
         <h6 style="text-align:left">Provider:</h6>
+        <b-form-select v-model="createRepoProvider" class="mb-3">
+          <template #first>
+            <b-form-select-option :value="null" disabled
+              >-- Please select an option --</b-form-select-option
+            >
+          </template>
+          <b-form-select-option value="github.com"
+            >Github.com</b-form-select-option
+          >
+          <b-form-select-option value="gitlab.com"
+            >Gitlab.com</b-form-select-option
+          >
+        </b-form-select>
+        <h6 style="text-align:left" v-if="createRepoProvider == 'gitlab.com'">
+          Gitlab Project ID:
+        </h6>
         <b-form-input
-          v-model="createRepoProvider"
-          placeholder="github.com"
+          v-if="createRepoProvider == 'gitlab.com'"
+          v-model="createRepoGitlabProjectID"
+          placeholder="12345678"
           size="11"
           style="text-align:left"
         />
@@ -67,7 +88,7 @@
         />
         <div align="right">
           <b-button @click="createRepository()" size="md" variant="info"
-            >add repo</b-button
+            >Create</b-button
           >
         </div>
       </b-container>
@@ -87,7 +108,7 @@
           style="max-width: 1080;"
           card-columns-gap:="1.25rem"
         >
-          <b-card-body>
+          <b-card-body class="card-body-no-margin-bottom">
             <b-row align-h="center">
               <b-col md="1" align-self="center">
                 <b-img
@@ -96,9 +117,21 @@
                   height="50"
                   src="@/assets/images/github.png"
                 ></b-img>
+                <b-img
+                  v-if="repo.repo_provider == 'gitlab.com'"
+                  width="50"
+                  height="50"
+                  src="@/assets/images/gitlab.png"
+                ></b-img>
               </b-col>
               <b-col md="10" align-self="center">
-                <h3>{{ repo.repo_name }}</h3>
+                <h4>
+                  <a v-bind:href="generateRepositoryLink(index)"
+                    ><div class="text-no-link">
+                      {{ repo.repo_owner }}/{{ repo.repo_name }}
+                    </div></a
+                  >
+                </h4>
               </b-col>
               <b-col md="1">
                 <b-form-checkbox
@@ -119,44 +152,55 @@
                   </b-card-text></b
                 >
                 <b-card-text
-                  >{{ repo.branch_base }} «
+                  >{{ repo.branch_base }} <strong>«</strong>
                   {{ repo.branch_head }}
                 </b-card-text>
                 <b
-                  ><b-card-text v-if="repo.current_version != ''">
+                  ><b-card-text v-if="repo.current_version != null">
                     Current Version:
                   </b-card-text></b
                 >
-                <b-card-text v-if="repo.current_version != ''">
+                <b-card-text v-if="repo.current_version != null">
                   {{ repo.current_version }}
                 </b-card-text>
               </b-card-body>
             </b-col>
             <b-col md="9">
               <b-card-body>
-                <textarea
+                <b-textarea
                   v-model="repo.release_notes"
                   placeholder="Insert notes"
                   rows="4"
-                ></textarea>
+                  max-rows="10"
+                ></b-textarea>
               </b-card-body>
             </b-col>
           </b-row>
           <b-card-footer>
-            <b-input-group>
-              <b-form-input
-                v-model="repo.version"
-                placeholder="Version - e.g. v0.11.0"
-              ></b-form-input>
-              <b-input-group-append>
-                <b-button
-                  variant="info"
-                  @click="createRelease(index)"
-                  :disabled="false"
-                  >deploy</b-button
-                >
-              </b-input-group-append>
-            </b-input-group>
+            <b-row no-gutters>
+              <b-col md="2">
+                <b-form-checkbox
+                  v-model="repo.hotfix"
+                  v-bind:value="true"
+                  v-bind:unchecked-value="false"
+                  >hotfix</b-form-checkbox
+                ></b-col
+              >
+              <b-col>
+                <b-input-group>
+                  <b-form-input
+                    size="small"
+                    v-model="repo.version"
+                    placeholder="Version - e.g. v0.11.0"
+                  ></b-form-input>
+                  <b-input-group-append>
+                    <b-button variant="info" @click="createRelease(index)"
+                      >Deploy</b-button
+                    >
+                  </b-input-group-append>
+                </b-input-group>
+              </b-col>
+            </b-row>
           </b-card-footer>
         </b-card>
       </b-card-group>
@@ -189,8 +233,7 @@ export default {
       success: "",
       selected: false,
       selectedCount: 0,
-      disableButton: true,
-      disableDeployButton: true,
+      disableDeleteRepositoriesButton: true,
       github_owner: "",
       github_repo: "",
       branch_base: "",
@@ -202,7 +245,8 @@ export default {
       createRepoOrganization: "",
       createRepoName: "",
       createRepoBranchBase: "",
-      createRepoBranchHead: ""
+      createRepoBranchHead: "",
+      createRepoGitlabProjectID: ""
     };
   },
   props: {
@@ -212,6 +256,28 @@ export default {
   },
 
   methods: {
+    generateRepositoryLink(index) {
+      return (
+        "https://" +
+        this.repositories[index].repo_provider +
+        "/" +
+        this.repositories[index].repo_owner +
+        "/" +
+        this.repositories[index].repo_name
+      );
+      // const provider_route = this.repositories[index].repo_provider.split(
+      //   ".com"
+      // )[0];
+      // return (
+      //   "/repositories/" +
+      //   provider_route +
+      //   "/" +
+      //   this.repositories[index].repo_owner +
+      //   "/" +
+      //   this.repositories[index].repo_name
+      // );
+    },
+
     enableDeleteButton(selectedStatus) {
       if (selectedStatus == "selected") {
         this.selectedCount += 1;
@@ -220,19 +286,11 @@ export default {
       }
 
       if (this.selectedCount > 0) {
-        this.disableButton = false;
+        this.disableDeleteRepositoriesButton = false;
       } else if (this.selectedCount == 0) {
-        this.disableButton = true;
+        this.disableDeleteRepositoriesButton = true;
       }
     },
-
-    // enableDeployButton(index) {
-    //   if (this.repositories[index].version == undefined) {
-    //     this.repositories[index].deployable = true;
-    //   } else {
-    //     this.repositories[index].deployable = false;
-    //   }
-    // },
 
     confirmTag(index) {
       if (this.repositories[index].version == undefined) {
@@ -253,6 +311,14 @@ export default {
 
     createRelease(index) {
       console.log("testing createRelease...");
+      if (!("version" in this.repositories[index])) {
+        this.$bvToast.toast("Deploys require a version.", {
+          title: "Error",
+          variant: "danger",
+          autoHideDelay: 3000
+        });
+      }
+
       this.repositories[index].submitting = true;
       this.clearStatus(index);
 
@@ -263,12 +329,15 @@ export default {
       }
 
       const releaseEvent = {
-        github_owner: process.env.VUE_APP_GITHUB_OWNER,
-        github_repo: this.repositories[index].repo_name,
+        repo_owner: process.env.VUE_APP_GITHUB_OWNER,
+        repo_name: this.repositories[index].repo_name,
+        repo_provider: this.repositories[index].repo_provider,
         branch_base: this.repositories[index].branch_base,
         branch_head: this.repositories[index].branch_head,
         release_body: this.repositories[index].release_notes,
-        release_version: this.repositories[index].version
+        release_version: this.repositories[index].version,
+        gitlab_project_id: this.repositories[index].gitlab_repo_id,
+        hotfix: this.repositories[index].hotfix
       };
       this.$emit("create:release", releaseEvent);
       this.repositories[index].error = false;
@@ -279,11 +348,13 @@ export default {
     createRepository() {
       console.log("testing createRepository");
       const createRepositoryEvent = {
+        type: "repo",
         repo_provider: this.createRepoProvider,
-        repo_owner: this.createRepoOrganization,
         repo_name: this.createRepoName,
+        repo_owner: this.createRepoOrganization,
         branch_base: this.createRepoBranchBase,
-        branch_head: this.createRepoBranchHead
+        branch_head: this.createRepoBranchHead,
+        gitlab_repo_id: this.createRepoGitlabProjectID
       };
       this.$emit("create:repository", createRepositoryEvent);
     },
@@ -297,7 +368,7 @@ export default {
         if (repo.selected) {
           var deleteRepo = {
             repo_name: repo.repo_name,
-            repo_owner: repo.repo_owner
+            repo_provider: repo.repo_provider
           };
           filtered.push(deleteRepo);
         }
@@ -312,3 +383,17 @@ export default {
   }
 };
 </script>
+
+<style>
+.text-no-link {
+  color: #007d9c;
+}
+
+.button-margin-right {
+  margin-right: 10px;
+}
+
+.card-body-no-margin-bottom {
+  padding-bottom: 0px;
+}
+</style>

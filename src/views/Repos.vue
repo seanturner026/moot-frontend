@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="small-container">
-    <h1>Serverless Release Dashboard</h1>
+    <h1 style="margin-bottom: 50px">Serverless Release Dashboard</h1>
     <repo-table
       :repositories="repositories"
       :key="repoTableComponentKey"
@@ -35,19 +35,44 @@ export default {
       this.repoTableComponentKey += 1;
     },
 
-    createRepositoryNotification(createRepositoryEvent) {
-      console.log(createRepositoryEvent);
-      this.$bvToast.toast(
-        `Added repository ${createRepositoryEvent.repo_name}`,
-        {
-          title: "Success!",
-          variant: "info",
-          autoHideDelay: 3000
-        }
-      );
-    },
-
     async createRepository(createRepositoryEvent) {
+      if (
+        createRepositoryEvent.branch_base == "" ||
+        createRepositoryEvent.branch_head == "" ||
+        createRepositoryEvent.repo_name == "" ||
+        createRepositoryEvent.repo_owner == "" ||
+        createRepositoryEvent.repo_provider == "" ||
+        (createRepositoryEvent.repo_provider == "gitlab.com" &&
+          createRepositoryEvent.gitlab_repo_id == "")
+      ) {
+        this.$bvToast.toast(
+          `Unable to add repository, ensure all fields are populated.`,
+          {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 4000
+          }
+        );
+        return;
+      }
+      for (var i = 0; i < this.repositories.length; i++) {
+        if (
+          createRepositoryEvent.repo_name == this.repositories[i].repo_name &&
+          createRepositoryEvent.repo_owner == this.repositories[i].repo_owner &&
+          createRepositoryEvent.repo_provider ==
+            this.repositories[i].repo_provider
+        ) {
+          this.$bvToast.toast(
+            `Unable to add a repository which is already managed.`,
+            {
+              title: "Error",
+              variant: "danger",
+              autoHideDelay: 4000
+            }
+          );
+          return;
+        }
+      }
       try {
         const response = await fetch(
           process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/create",
@@ -63,7 +88,14 @@ export default {
         const data = await response.json();
         console.log(data);
         this.repositories.push(createRepositoryEvent);
-        this.createRepositoryNotification(createRepositoryEvent);
+        this.$bvToast.toast(
+          `Added repository ${createRepositoryEvent.repo_name}`,
+          {
+            title: "Success!",
+            variant: "info",
+            autoHideDelay: 3000
+          }
+        );
       } catch (error) {
         console.error(error);
       }
@@ -72,8 +104,11 @@ export default {
     async createRelease(releaseEvent) {
       try {
         console.log(releaseEvent);
+        const provider_route = releaseEvent.repo_provider.split(".com")[0];
         const response = await fetch(
-          process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/releases/create",
+          process.env.VUE_APP_API_GATEWAY_ENDPOINT +
+            "/releases/create/" +
+            provider_route,
           {
             method: "POST",
             body: JSON.stringify(releaseEvent),
@@ -106,7 +141,6 @@ export default {
         );
         const data = await response.json();
         console.log(data);
-        console.log("before", this.repositories);
         for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
           console.log(i, deleteRepositoriesEvent.repositories[i]);
           this.repositories.splice(
@@ -120,7 +154,6 @@ export default {
           );
         }
         this.forceRerender();
-        console.log("after", this.repositories);
       } catch (error) {
         console.error(error);
       }

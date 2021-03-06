@@ -7,29 +7,38 @@
         placeholder="e.g. email@example.com"
       ></b-form-input>
       <b-input-group-append>
-        <b-button variant="info" @click="createUser(invitedUser)"
-          >Invite user</b-button
-        >
+        <b-button
+          v-if="this.sending == false"
+          variant="info"
+          @click="createUser(invitedUser)"
+          >Invite user
+        </b-button>
+        <b-button
+          v-if="this.sending == true"
+          variant="info"
+          @click="createUser(invitedUser)"
+          >Invite user
+          <b-spinner v-if="this.sending == true" type="grow" small></b-spinner>
+        </b-button>
       </b-input-group-append>
     </b-input-group>
-    <table>
-      <tr>
-        <th style="text-align:left">User Name</th>
-      </tr>
-      <tbody>
-        <tr v-for="(user, index) in users" :key="user.name">
-          <td>{{ user.name }}</td>
-          <td>
-            <b-button
-              size="md"
-              variant="outline-danger"
-              @click="deleteUser(index)"
-              >Delete</b-button
-            >
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <b-table
+      hover
+      bordered
+      borderless
+      head-row-variant="info"
+      :items="users"
+      :fields="fields"
+    >
+      <template #cell(delete)="row">
+        <b-button
+          size="sm"
+          variant="outline-danger"
+          @click="deleteUser(row.index)"
+          >Delete</b-button
+        >
+      </template></b-table
+    >
   </div>
 </template>
 
@@ -38,6 +47,8 @@ export default {
   name: "users-table",
   data() {
     return {
+      sending: false,
+      fields: ["name", "delete"],
       invitedUser: ""
     };
   },
@@ -48,8 +59,34 @@ export default {
   },
 
   methods: {
+    checkIfUserExists(email) {
+      console.log("testing checkIfUserExists...");
+      for (var i = 0; i < this.users.length; i++) {
+        if (this.users[i].name == email) {
+          return true;
+        }
+      }
+      return false;
+    },
+
     createUser() {
       console.log("testing createUser...");
+      if (this.invitedUser == "") {
+        this.$bvToast.toast("User invite requires email address.", {
+          title: "Error",
+          variant: "danger",
+          autoHideDelay: 3000
+        });
+        return;
+      } else if (this.checkIfUserExists(this.invitedUser)) {
+        this.$bvToast.toast(`User ${this.invitedUser} already exists.`, {
+          title: "Error",
+          variant: "danger",
+          autoHideDelay: 3000
+        });
+        return;
+      }
+      this.sending = true;
       const createUserEvent = {
         email_address: this.invitedUser
       };

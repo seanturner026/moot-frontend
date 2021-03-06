@@ -41,7 +41,7 @@ export default {
         }
         const token = data.headers["Authorization"];
         this.$cookies.set("Authorization", token);
-        this.$router.push("/repos");
+        this.$router.push("/repositories");
       } catch (error) {
         console.error(error);
       }
@@ -61,7 +61,7 @@ export default {
       } catch (error) {
         console.error(error);
       }
-      this.$router.push("/repos");
+      this.$router.push("/repositories");
     }
   }
 };

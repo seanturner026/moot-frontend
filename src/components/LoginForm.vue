@@ -1,6 +1,6 @@
 <template>
   <div id="login-form">
-    <h1>Serverless Release Dashboard</h1>
+    <h1 style="margin-bottom: 50px">Serverless Release Dashboard</h1>
     <div id="description" class="small-container" style="text-align:left">
       <b>Clicking deploy will trigger the following actions:</b>
       <li style="text-align:left">
@@ -43,13 +43,30 @@
       />
     </form>
     <b-button
-      v-if="!new_password_required"
+      v-if="!new_password_required && login_details.sending == false"
       size="md"
       variant="info"
       @click="loginUser($event)"
     >
-      Login</b-button
+      Login
+      <b-spinner
+        v-if="login_details.sending == true"
+        type="grow"
+        small
+      ></b-spinner
+    ></b-button>
+    <b-button
+      v-if="
+        (!new_password_required && login_details.sending == true) ||
+          (new_password_required && login_details.sending == true)
+      "
+      size="md"
+      variant="info"
+      @click="loginUser($event)"
     >
+      Logging in
+      <b-spinner type="grow" small></b-spinner
+    ></b-button>
     <b-button
       v-if="new_password_required"
       size="md"
@@ -75,7 +92,8 @@ export default {
     return {
       login_details: {
         email_address: "",
-        password: ""
+        password: "",
+        sending: false
       }
     };
   },
@@ -83,6 +101,7 @@ export default {
   methods: {
     loginUser() {
       console.log("testing loginUser...");
+      this.login_details.sending = true;
       const loginEvent = {
         email_address: this.login_details.email_address,
         password: this.login_details.password
@@ -92,7 +111,7 @@ export default {
 
     resetPassword() {
       console.log("testing resetPassword...");
-
+      this.login_details.sending = true;
       const loginEvent = {
         email_address: this.login_details.email_address,
         password: this.login_details.password,

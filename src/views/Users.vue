@@ -1,5 +1,6 @@
 <template>
-  <div class="users">
+  <div id="app" class="small-container">
+    <!-- <div class="users"> -->
     <users-table
       :users="users"
       :key="usersTableComponentKey"
