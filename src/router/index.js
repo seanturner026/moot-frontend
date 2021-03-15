@@ -8,14 +8,18 @@ Vue.use(VueRouter);
 async function listRepositories(to, from, next) {
   var isAuthenticated = false;
   console.log("testing listRepositories...");
-  if (Vue.$cookies.get("Authorization")) {
+  if (
+    Vue.$cookies.get("Authorization") &&
+    Vue.$cookies.get("X-Identity-Token")
+  ) {
     try {
       const response = await fetch(
         process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/repositories/list",
         {
           method: "GET",
           headers: {
-            Authorization: Vue.$cookies.get("Authorization")
+            Authorization: Vue.$cookies.get("Authorization"),
+            "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
           }
         }
       );
@@ -23,7 +27,8 @@ async function listRepositories(to, from, next) {
       console.log(repositories);
       if (repositories.message != "Unauthorized") {
         isAuthenticated = true;
-        const modifiedRespositories = repositories.map(v => ({
+        var repositoriesJSON = JSON.parse(repositories.message);
+        const modifiedRespositories = repositoriesJSON.map(v => ({
           ...v,
           hotfix: false
         }));
@@ -44,14 +49,18 @@ async function listRepositories(to, from, next) {
 async function listUsers(to, from, next) {
   var isAuthenticated = false;
   console.log("testing listUser...");
-  if (Vue.$cookies.get("Authorization")) {
+  if (
+    Vue.$cookies.get("Authorization") &&
+    Vue.$cookies.get("X-Identity-Token")
+  ) {
     try {
       const response = await fetch(
         process.env.VUE_APP_API_GATEWAY_ENDPOINT + "/users/list",
         {
           method: "GET",
           headers: {
-            Authorization: Vue.$cookies.get("Authorization")
+            Authorization: Vue.$cookies.get("Authorization"),
+            "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
           }
         }
       );
@@ -59,9 +68,10 @@ async function listUsers(to, from, next) {
       console.log(users);
       if (users.message != "Unauthorized") {
         isAuthenticated = true;
-        const modifiedUsers = users.map(v => ({
+        var usersJSON = JSON.parse(users.message);
+        const modifiedUsers = usersJSON.map(v => ({
           ...v,
-          delete: true
+          manage: true
         }));
         to.params.users = modifiedUsers;
         next();

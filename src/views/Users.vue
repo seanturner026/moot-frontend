@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="small-container">
-    <!-- <div class="users"> -->
+    <h1 style="margin-bottom: 50px">Serverless Release Dashboard</h1>
     <users-table
       :users="users"
       :key="usersTableComponentKey"
@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import UsersTable from "@/components/UsersTable.vue";
 
 export default {
@@ -41,14 +42,23 @@ export default {
             method: "POST",
             body: JSON.stringify(createUserEvent),
             headers: {
+              Authorization: this.$cookies.get("Authorization"),
               "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
             }
           }
         );
         const data = await response.json();
         console.log(response);
         console.log(data);
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         this.users.push({ name: createUserEvent.email_address });
         this.forceRerender();
       } catch (error) {
@@ -64,14 +74,23 @@ export default {
             method: "POST",
             body: JSON.stringify(deleteuserEvent),
             headers: {
+              Authorization: this.$cookies.get("Authorization"),
               "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
             }
           }
         );
         const data = await response.json();
         console.log(response);
         console.log(data);
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         this.users.splice(
           0,
           this.users.length,

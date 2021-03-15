@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import RepoTable from "@/components/RepoTable.vue";
 
 export default {
@@ -46,7 +47,7 @@ export default {
           createRepositoryEvent.gitlab_repo_id == "")
       ) {
         this.$bvToast.toast(
-          `Unable to add repository, ensure all fields are populated.`,
+          "Unable to add repository, ensure all fields are populated.",
           {
             title: "Error",
             variant: "danger",
@@ -63,7 +64,7 @@ export default {
             this.repositories[i].repo_provider
         ) {
           this.$bvToast.toast(
-            `Unable to add a repository which is already managed.`,
+            "Unable to add a repository which is already managed.",
             {
               title: "Error",
               variant: "danger",
@@ -80,12 +81,21 @@ export default {
             method: "POST",
             body: JSON.stringify(createRepositoryEvent),
             headers: {
+              Authorization: this.$cookies.get("Authorization"),
               "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(data.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(data);
         this.repositories.push(createRepositoryEvent);
         this.$bvToast.toast(
@@ -113,14 +123,28 @@ export default {
             method: "POST",
             body: JSON.stringify(releaseEvent),
             headers: {
+              Authorization: this.$cookies.get("Authorization"),
               "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(response);
         console.log(data);
+        this.$bvToast.toast(response.message, {
+          title: "Success",
+          variant: "info",
+          autoHideDelay: 3000
+        });
       } catch (error) {
         console.error(error);
       }
@@ -134,12 +158,21 @@ export default {
             method: "POST",
             body: JSON.stringify(deleteRepositoriesEvent),
             headers: {
+              Authorization: this.$cookies.get("Authorization"),
               "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              "X-Identity-Token": Vue.$cookies.get("X-Identity-Token")
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(data);
         for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
           console.log(i, deleteRepositoriesEvent.repositories[i]);

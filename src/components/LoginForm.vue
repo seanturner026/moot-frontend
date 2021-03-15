@@ -16,6 +16,14 @@
       </li>
     </div>
     <form>
+      <b><div align="left">Organization Name:</div></b>
+      <br />
+      <input
+        v-model="login_details.tenant_name"
+        type="text"
+        id="tenant_name"
+        name="tenant_name"
+      /><br />
       <b><div align="left">Email Address:</div></b>
       <br />
       <input
@@ -92,6 +100,7 @@ export default {
     return {
       login_details: {
         email_address: "",
+        tenant_name: "",
         password: "",
         sending: false
       }
@@ -104,6 +113,7 @@ export default {
       this.login_details.sending = true;
       const loginEvent = {
         email_address: this.login_details.email_address,
+        tenant_name: this.login_details.tenant_name,
         password: this.login_details.password
       };
       this.$emit("login:user", loginEvent);
@@ -114,6 +124,7 @@ export default {
       this.login_details.sending = true;
       const loginEvent = {
         email_address: this.login_details.email_address,
+        tenant_name: this.login_details.tenant_name,
         password: this.login_details.password,
         new_password: this.login_details.new_password,
         session_id: this.session_id

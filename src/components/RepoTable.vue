@@ -2,11 +2,7 @@
   <div id="repository-table">
     <b-container fluid="false">
       <b-input-group class="mt-3">
-        <b-button
-          class="button-margin-right"
-          v-b-toggle.repo-add-sidebar
-          md="1"
-          variant="info"
+        <b-button class="button-margin-right" v-b-modal.modal-lg variant="info"
           >Add Repository</b-button
         >
         <b-form-input
@@ -26,12 +22,12 @@
         </b-input-group-append>
       </b-input-group>
     </b-container>
-    <b-sidebar
-      id="repo-add-sidebar"
-      title="Add Repository"
-      backdrop
-      shadow
+    <b-modal
+      id="modal-lg"
+      v-bind:hide-footer="true"
       v-on:hidden="triggerForceRerender"
+      size="lg"
+      title="Add Repository"
     >
       <b-container fluid>
         <h6 style="text-align:left">Provider:</h6>
@@ -92,7 +88,7 @@
           >
         </div>
       </b-container>
-    </b-sidebar>
+    </b-modal>
     <div>
       <b-card-group
         deck
@@ -348,7 +344,6 @@ export default {
     createRepository() {
       console.log("testing createRepository");
       const createRepositoryEvent = {
-        type: "repo",
         repo_provider: this.createRepoProvider,
         repo_name: this.createRepoName,
         repo_owner: this.createRepoOrganization,

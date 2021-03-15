@@ -1,6 +1,6 @@
 <template>
   <div id="users-table">
-    <b-input-group class="mt-3">
+    <b-input-group class="mt-3" style="margin-bottom: 20px">
       <b-form-input
         v-model="invitedUser"
         size="17"
@@ -30,7 +30,7 @@
       :items="users"
       :fields="fields"
     >
-      <template #cell(delete)="row">
+      <template #cell(manage)="row">
         <b-button
           size="sm"
           variant="outline-danger"
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       sending: false,
-      fields: ["name", "delete"],
+      fields: ["name", "manage"],
       invitedUser: ""
     };
   },
