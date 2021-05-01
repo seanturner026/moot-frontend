@@ -37,12 +37,8 @@
               >-- Please select an option --</b-form-select-option
             >
           </template>
-          <b-form-select-option value="github.com"
-            >Github.com</b-form-select-option
-          >
-          <b-form-select-option value="gitlab.com"
-            >Gitlab.com</b-form-select-option
-          >
+          <b-form-select-option value="github">Github</b-form-select-option>
+          <b-form-select-option value="gitlab">Gitlab</b-form-select-option>
         </b-form-select>
         <h6 style="text-align:left" v-if="createRepoProvider == 'gitlab.com'">
           Gitlab Project ID:
@@ -108,13 +104,13 @@
             <b-row align-h="center">
               <b-col md="1" align-self="center">
                 <b-img
-                  v-if="repo.repo_provider == 'github.com'"
+                  v-if="repo.repo_provider == 'github'"
                   width="50"
                   height="50"
                   src="@/assets/images/github.png"
                 ></b-img>
                 <b-img
-                  v-if="repo.repo_provider == 'gitlab.com'"
+                  v-if="repo.repo_provider == 'gitlab'"
                   width="50"
                   height="50"
                   src="@/assets/images/gitlab.png"

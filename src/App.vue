@@ -14,6 +14,11 @@
             <div class="text-no-link">Users</div></router-link
           ></b-nav-item
         >
+        <b-nav-item href="" v-if="this.$router.currentRoute.path != '/'">
+          <router-link v-if="this.$router.currentRoute.path != '/'" to="/admin">
+            <div class="text-no-link">Admin</div></router-link
+          ></b-nav-item
+        >
       </b-navbar-nav>
     </b-navbar>
     <router-view></router-view>

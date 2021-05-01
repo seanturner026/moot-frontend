@@ -43,7 +43,7 @@ export default {
         createRepositoryEvent.repo_name == "" ||
         createRepositoryEvent.repo_owner == "" ||
         createRepositoryEvent.repo_provider == "" ||
-        (createRepositoryEvent.repo_provider == "gitlab.com" &&
+        (createRepositoryEvent.repo_provider == "gitlab" &&
           createRepositoryEvent.gitlab_repo_id == "")
       ) {
         this.$bvToast.toast(
@@ -114,7 +114,7 @@ export default {
     async createRelease(releaseEvent) {
       try {
         console.log(releaseEvent);
-        const provider_route = releaseEvent.repo_provider.split(".com")[0];
+        const provider_route = releaseEvent.repo_provider;
         const response = await fetch(
           process.env.VUE_APP_API_GATEWAY_ENDPOINT +
             "/releases/create/" +

@@ -38,12 +38,13 @@ export default {
         if (data.headers["X-Session-Id"] != null) {
           this.session_id = data.headers["X-Session-Id"];
           this.new_password_required = true;
+        } else {
+          const token = data.headers["Authorization"];
+          const identity_token = data.headers["X-Identity-Token"];
+          this.$cookies.set("Authorization", token);
+          this.$cookies.set("X-Identity-Token", identity_token);
+          this.$router.push("/repositories");
         }
-        const token = data.headers["Authorization"];
-        const identity_token = data.headers["X-Identity-Token"];
-        this.$cookies.set("Authorization", token);
-        this.$cookies.set("X-Identity-Token", identity_token);
-        this.$router.push("/repositories");
       } catch (error) {
         console.error(error);
       }

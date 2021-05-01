@@ -106,6 +106,13 @@ const routes = [
     props: true,
     beforeEnter: listUsers,
     component: () => import("../views/Users.vue")
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    props: true,
+    // beforeEnter: listUsers,
+    component: () => import("../views/Admin.vue")
   }
 ];
 
