@@ -23,7 +23,8 @@ async function listRepositories(to, from, next) {
       console.log(repositories);
       if (repositories.message != "Unauthorized") {
         isAuthenticated = true;
-        const modifiedRespositories = repositories.map(v => ({
+        var repositoriesJSON = JSON.parse(repositories.message);
+        const modifiedRespositories = repositoriesJSON.map(v => ({
           ...v,
           hotfix: false
         }));
@@ -59,9 +60,10 @@ async function listUsers(to, from, next) {
       console.log(users);
       if (users.message != "Unauthorized") {
         isAuthenticated = true;
-        const modifiedUsers = users.map(v => ({
+        var usersJSON = JSON.parse(users.message);
+        const modifiedUsers = usersJSON.map(v => ({
           ...v,
-          delete: true
+          manage: true
         }));
         to.params.users = modifiedUsers;
         next();
