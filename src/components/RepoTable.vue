@@ -2,11 +2,7 @@
   <div id="repository-table">
     <b-container fluid="false">
       <b-input-group class="mt-3">
-        <b-button
-          class="button-margin-right"
-          v-b-toggle.repo-add-sidebar
-          md="1"
-          variant="info"
+        <b-button class="button-margin-right" v-b-modal.modal-lg variant="info"
           >Add Repository</b-button
         >
         <b-form-input
@@ -26,12 +22,12 @@
         </b-input-group-append>
       </b-input-group>
     </b-container>
-    <b-sidebar
-      id="repo-add-sidebar"
-      title="Add Repository"
-      backdrop
-      shadow
+    <b-modal
+      id="modal-lg"
+      v-bind:hide-footer="true"
       v-on:hidden="triggerForceRerender"
+      size="lg"
+      title="Add Repository"
     >
       <b-container fluid>
         <h6 style="text-align:left">Provider:</h6>
@@ -41,12 +37,8 @@
               >-- Please select an option --</b-form-select-option
             >
           </template>
-          <b-form-select-option value="github.com"
-            >Github.com</b-form-select-option
-          >
-          <b-form-select-option value="gitlab.com"
-            >Gitlab.com</b-form-select-option
-          >
+          <b-form-select-option value="github">Github</b-form-select-option>
+          <b-form-select-option value="gitlab">Gitlab</b-form-select-option>
         </b-form-select>
         <h6 style="text-align:left" v-if="createRepoProvider == 'gitlab.com'">
           Gitlab Project ID:
@@ -92,7 +84,7 @@
           >
         </div>
       </b-container>
-    </b-sidebar>
+    </b-modal>
     <div>
       <b-card-group
         deck
@@ -112,13 +104,13 @@
             <b-row align-h="center">
               <b-col md="1" align-self="center">
                 <b-img
-                  v-if="repo.repo_provider == 'github.com'"
+                  v-if="repo.repo_provider == 'github'"
                   width="50"
                   height="50"
                   src="@/assets/images/github.png"
                 ></b-img>
                 <b-img
-                  v-if="repo.repo_provider == 'gitlab.com'"
+                  v-if="repo.repo_provider == 'gitlab'"
                   width="50"
                   height="50"
                   src="@/assets/images/gitlab.png"
@@ -329,7 +321,7 @@ export default {
       }
 
       const releaseEvent = {
-        repo_owner: process.env.VUE_APP_GITHUB_OWNER,
+        repo_owner: this.repositories[index].repo_owner,
         repo_name: this.repositories[index].repo_name,
         repo_provider: this.repositories[index].repo_provider,
         branch_base: this.repositories[index].branch_base,
@@ -348,7 +340,6 @@ export default {
     createRepository() {
       console.log("testing createRepository");
       const createRepositoryEvent = {
-        type: "repo",
         repo_provider: this.createRepoProvider,
         repo_name: this.createRepoName,
         repo_owner: this.createRepoOrganization,

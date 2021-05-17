@@ -56,10 +56,7 @@
       ></b-spinner
     ></b-button>
     <b-button
-      v-if="
-        (!new_password_required && login_details.sending == true) ||
-          (new_password_required && login_details.sending == true)
-      "
+      v-if="!new_password_required && login_details.sending == true"
       size="md"
       variant="info"
       @click="loginUser($event)"

@@ -42,11 +42,11 @@ export default {
         createRepositoryEvent.repo_name == "" ||
         createRepositoryEvent.repo_owner == "" ||
         createRepositoryEvent.repo_provider == "" ||
-        (createRepositoryEvent.repo_provider == "gitlab.com" &&
+        (createRepositoryEvent.repo_provider == "gitlab" &&
           createRepositoryEvent.gitlab_repo_id == "")
       ) {
         this.$bvToast.toast(
-          `Unable to add repository, ensure all fields are populated.`,
+          "Unable to add repository, ensure all fields are populated.",
           {
             title: "Error",
             variant: "danger",
@@ -63,7 +63,7 @@ export default {
             this.repositories[i].repo_provider
         ) {
           this.$bvToast.toast(
-            `Unable to add a repository which is already managed.`,
+            "Unable to add a repository which is already managed.",
             {
               title: "Error",
               variant: "danger",
@@ -80,12 +80,20 @@ export default {
             method: "POST",
             body: JSON.stringify(createRepositoryEvent),
             headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              Authorization: this.$cookies.get("Authorization"),
+              "Content-type": "application/json; charset=UTF-8"
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(data.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(data);
         this.repositories.push(createRepositoryEvent);
         this.$bvToast.toast(
@@ -104,7 +112,7 @@ export default {
     async createRelease(releaseEvent) {
       try {
         console.log(releaseEvent);
-        const provider_route = releaseEvent.repo_provider.split(".com")[0];
+        const provider_route = releaseEvent.repo_provider;
         const response = await fetch(
           process.env.VUE_APP_API_GATEWAY_ENDPOINT +
             "/releases/create/" +
@@ -113,14 +121,27 @@ export default {
             method: "POST",
             body: JSON.stringify(releaseEvent),
             headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              Authorization: this.$cookies.get("Authorization"),
+              "Content-type": "application/json; charset=UTF-8"
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(response);
         console.log(data);
+        this.$bvToast.toast(response.message, {
+          title: "Success",
+          variant: "info",
+          autoHideDelay: 3000
+        });
       } catch (error) {
         console.error(error);
       }
@@ -134,12 +155,20 @@ export default {
             method: "POST",
             body: JSON.stringify(deleteRepositoriesEvent),
             headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: this.$cookies.get("Authorization")
+              Authorization: this.$cookies.get("Authorization"),
+              "Content-type": "application/json; charset=UTF-8"
             }
           }
         );
         const data = await response.json();
+        if (response.status != 200) {
+          this.$bvToast.toast(response.message, {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          });
+          return;
+        }
         console.log(data);
         for (let i = 0; i < deleteRepositoriesEvent.repositories.length; i++) {
           console.log(i, deleteRepositoriesEvent.repositories[i]);
