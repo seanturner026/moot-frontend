@@ -40,11 +40,11 @@
           <b-form-select-option value="github">Github</b-form-select-option>
           <b-form-select-option value="gitlab">Gitlab</b-form-select-option>
         </b-form-select>
-        <h6 style="text-align:left" v-if="createRepoProvider == 'gitlab.com'">
+        <h6 style="text-align:left" v-if="createRepoProvider == 'gitlab'">
           Gitlab Project ID:
         </h6>
         <b-form-input
-          v-if="createRepoProvider == 'gitlab.com'"
+          v-if="createRepoProvider == 'gitlab'"
           v-model="createRepoGitlabProjectID"
           placeholder="12345678"
           size="11"
