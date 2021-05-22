@@ -59,10 +59,12 @@ export default {
         );
         const data = await response.json();
         console.log(data);
+        const token = data.headers["Authorization"];
+        this.$cookies.set("Authorization", token);
+        this.$router.push("/repositories");
       } catch (error) {
         console.error(error);
       }
-      this.$router.push("/repositories");
     }
   }
 };
