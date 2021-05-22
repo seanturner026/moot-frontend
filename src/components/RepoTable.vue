@@ -60,7 +60,7 @@
         <h6 style="text-align:left">Repository:</h6>
         <b-form-input
           v-model="createRepoName"
-          placeholder="serverless-release-dashboard"
+          placeholder="moot"
           size="24"
           style="text-align:left"
         />

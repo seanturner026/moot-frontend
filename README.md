@@ -1,4 +1,4 @@
-# serverless-release-dashboard-frontend
+# moot-frontend
 
 ## Project setup
 ```

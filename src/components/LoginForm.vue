@@ -1,6 +1,6 @@
 <template>
   <div id="login-form">
-    <h1 style="margin-bottom: 50px">Serverless Release Dashboard</h1>
+    <h1 style="margin-bottom: 50px">Moot</h1>
     <div id="description" class="small-container" style="text-align:left">
       <b>Clicking deploy will trigger the following actions:</b>
       <li style="text-align:left">

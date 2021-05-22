@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="small-container">
-    <h1 style="margin-bottom: 50px">Serverless Release Dashboard</h1>
+    <h1 style="margin-bottom: 50px">Moot</h1>
     <repo-table
       :repositories="repositories"
       :key="repoTableComponentKey"

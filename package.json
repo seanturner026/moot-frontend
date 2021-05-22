@@ -1,5 +1,5 @@
 {
-  "name": "serverless-release-dashboard-frontend",
+  "name": "moot-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
