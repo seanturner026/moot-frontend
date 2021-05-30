@@ -252,7 +252,7 @@ export default {
       return (
         "https://" +
         this.repositories[index].repo_provider +
-        "/" +
+        ".com/" +
         this.repositories[index].repo_owner +
         "/" +
         this.repositories[index].repo_name

@@ -34,6 +34,10 @@
       <label v-if="new_password_required" for="new_password"
         >New Password:</label
       ><br />
+      <label v-if="new_password_required" for="new_password">
+        Requires a length of 36 characters, lower + uppercase, and numbers:
+      </label>
+      <br />
       <input
         v-if="new_password_required"
         v-model="login_details.new_password"
@@ -108,14 +112,25 @@ export default {
 
     resetPassword() {
       console.log("testing resetPassword...");
+      if (this.login_details.password == this.login_details.new_password) {
+        this.$bvToast.toast(
+          "New password must be different from current password.",
+          {
+            title: "Error",
+            variant: "danger",
+            autoHideDelay: 3000
+          }
+        );
+        return;
+      }
       this.login_details.sending = true;
-      const loginEvent = {
+      const resetPasswordEvent = {
         email_address: this.login_details.email_address,
         password: this.login_details.password,
         new_password: this.login_details.new_password,
         session_id: this.session_id
       };
-      this.$emit("reset:password", loginEvent);
+      this.$emit("reset:password", resetPasswordEvent);
     }
   }
 };
