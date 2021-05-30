@@ -31,10 +31,10 @@
         id="password"
         name="password"
       />
-      <label v-if="new_password_required" for="new_password" align="left"
+      <label v-if="new_password_required" for="new_password"
         >New Password:</label
       ><br />
-      <label v-if="new_password_required" for="new_password" align="left">
+      <label v-if="new_password_required" for="new_password">
         Requires a length of 36 characters, lower + uppercase, and numbers:
       </label>
       <br />
